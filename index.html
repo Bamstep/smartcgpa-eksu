@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"/>
+<meta name="theme-color" content="#0d1117"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<title>SmartCGPA – EKSU</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700;900&family=DM+Sans:wght@400;500;600;700&display=swap"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0d1117;--bg2:#161b22;--bg3:#21262d;--bg4:#30363d;
+  --border:#30363d;--border2:#21262d;
+  --green:#3fb950;--gdim:#1a4a2e;
+  --blue:#58a6ff;--bdim:#1c3557;
+  --orange:#f0883e;--odim:#4a2a0e;
+  --red:#f85149;--rdim:#4a1010;
+  --gold:#e3b341;--ydim:#3d2f0a;
+  --purple:#bc8cff;
+  --text:#e6edf3;--text2:#8b949e;--text3:#6e7681;
+  --cr:#c9314a;--crdim:#3a0d16;
+  --r:10px;--rs:6px;
+}
+html{font-size:16px}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;overflow-x:hidden;-webkit-text-size-adjust:100%}
+input,select,textarea{font-family:'DM Sans',sans-serif;font-size:16px;color:var(--text)}
+button{touch-action:manipulation;-webkit-tap-highlight-color:transparent;cursor:pointer}
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-thumb{background:var(--bg4);border-radius:3px}
+
+/* layout */
+.app{min-height:100vh;background:var(--bg);display:flex;flex-direction:column}
+.top-nav{position:sticky;top:0;z-index:100;background:rgba(13,17,23,.97);border-bottom:1px solid var(--border);padding:0 14px;height:52px;display:flex;align-items:center;justify-content:space-between;gap:8px}
+.nav-logo{width:30px;height:30px;background:var(--cr);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
+.nav-title{font-family:'Fraunces',serif;font-weight:700;font-size:15px;color:var(--text)}
+.nav-sub{font-size:10px;color:var(--text2);letter-spacing:.8px;text-transform:uppercase}
+.user-pill{display:flex;align-items:center;gap:6px;padding:5px 10px;border-radius:99px;border:1px solid var(--border);background:var(--bg3);color:var(--text);font-size:12px;font-weight:600;max-width:140px;cursor:pointer}
+.up-av{width:22px;height:22px;border-radius:50%;background:var(--cr);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;color:#fff;flex-shrink:0}
+.up-nm{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;min-width:0}
+.bot-nav{position:fixed;bottom:0;left:0;right:0;z-index:100;background:rgba(13,17,23,.98);border-top:1px solid var(--border);display:flex;height:60px;padding-bottom:env(safe-area-inset-bottom,0px)}
+.bnav{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;border:none;background:transparent;color:var(--text2);padding:4px 2px;font-family:'DM Sans',sans-serif}
+.bnav.on{color:var(--cr)}
+.bicon{font-size:18px;line-height:1}
+.blbl{font-size:9px;font-weight:600;letter-spacing:.4px;text-transform:uppercase;white-space:nowrap}
+.page{display:none;flex:1;padding:14px 13px 80px;max-width:600px;margin:0 auto;width:100%}
+.page.on{display:block}
+.ptitle{font-family:'Fraunces',serif;font-size:22px;font-weight:700;color:var(--text);margin-bottom:3px}
+.psub{font-size:13px;color:var(--text2);margin-bottom:16px;line-height:1.4}
+
+/* cards */
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:12px}
+.chd{font-family:'Fraunces',serif;font-size:15px;font-weight:600;color:var(--text);margin-bottom:10px}
+
+/* stats */
+.sgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+.sc{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:12px;border-top:3px solid}
+.slbl{font-size:10px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--text2);margin-bottom:3px}
+.sval{font-family:'Fraunces',serif;font-size:28px;font-weight:700;line-height:1}
+.ssub{font-size:11px;color:var(--text2);margin-top:3px;line-height:1.3}
+
+/* buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:5px;padding:10px 15px;border-radius:var(--rs);border:none;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;transition:opacity .15s}
+.btn:active{opacity:.7}
+.bp{background:var(--cr);color:#fff}
+.bs{background:var(--bg3);color:var(--text);border:1px solid var(--border)}
+.bg{background:transparent;color:var(--text2);border:1px solid var(--border)}
+.bd{background:var(--rdim);color:var(--red);border:1px solid #5a1a1a}
+.bsm{padding:7px 11px;font-size:12px}
+.bxs{padding:4px 9px;font-size:11px;border-radius:4px}
+.bblk{width:100%}
+
+/* form */
+.fg{display:flex;flex-direction:column;gap:4px;margin-bottom:11px}
+.fl{font-size:11px;font-weight:700;letter-spacing:.7px;text-transform:uppercase;color:var(--text2)}
+.fi{width:100%;padding:11px;background:var(--bg3);border:1.5px solid var(--border);border-radius:var(--rs);color:var(--text);font-size:16px;outline:none;-webkit-appearance:none}
+.fi:focus{border-color:var(--cr)}
+.fsel{width:100%;padding:11px;background:var(--bg3);border:1.5px solid var(--border);border-radius:var(--rs);color:var(--text);font-size:16px;outline:none;cursor:pointer;-webkit-appearance:none;appearance:none}
+.fsel:focus{border-color:var(--cr)}
+
+/* progress */
+.prog{height:7px;background:var(--bg3);border-radius:99px;overflow:hidden;border:1px solid var(--border)}
+.pfill{height:100%;border-radius:99px;transition:width .5s}
+
+/* alerts */
+.alt{padding:10px 13px;border-radius:var(--rs);font-size:13px;margin-bottom:10px;border-left:3px solid;line-height:1.4}
+.aw{background:var(--ydim);color:var(--gold);border-color:var(--gold)}
+.ad{background:var(--rdim);color:#f97;border-color:var(--red)}
+.ao{background:var(--gdim);color:var(--green);border-color:var(--green)}
+.ai{background:var(--bdim);color:var(--blue);border-color:var(--blue)}
+
+/* badge */
+.bdg{display:inline-flex;align-items:center;padding:2px 8px;border-radius:99px;font-size:11px;font-weight:700}
+
+/* trend */
+.twrap{display:flex;align-items:flex-end;gap:6px;height:70px;padding:0 2px}
+.tcol{display:flex;flex-direction:column;align-items:center;gap:3px;flex:1}
+.tbar{width:100%;border-radius:4px 4px 0 0;min-height:4px}
+.tlbl{font-size:9px;color:var(--text2);text-align:center;overflow:hidden;max-width:100%}
+.tval{font-size:9px;color:var(--text);font-weight:600}
+
+/* table */
+.twrap2{overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:var(--rs);border:1px solid var(--border)}
+table.t{width:100%;border-collapse:collapse;min-width:320px}
+table.t th{padding:8px 11px;font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text2);background:var(--bg3);border-bottom:1px solid var(--border);text-align:left;white-space:nowrap}
+table.t td{padding:8px 11px;font-size:13px;border-bottom:1px solid var(--border2);white-space:nowrap}
+table.t tr:last-child td{border-bottom:none}
+
+/* course cards */
+.cc{background:var(--bg3);border:1px solid var(--border);border-radius:var(--rs);padding:11px;margin-bottom:8px}
+.cr1{display:grid;grid-template-columns:90px 1fr;gap:8px;margin-bottom:8px}
+.cr2{display:grid;grid-template-columns:1fr 1fr 58px 32px;gap:6px;align-items:flex-end}
+.cml{font-size:9px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:var(--text2);margin-bottom:3px}
+.inp{width:100%;padding:8px;background:var(--bg);border:1.5px solid var(--border);border-radius:5px;color:var(--text);font-size:15px;outline:none;-webkit-appearance:none}
+.inp:focus{border-color:var(--cr)}
+.sel{width:100%;padding:8px;background:var(--bg);border:1.5px solid var(--border);border-radius:5px;color:var(--text);font-size:15px;outline:none;cursor:pointer;-webkit-appearance:none;appearance:none}
+.sel:focus{border-color:var(--cr)}
+.qpb{display:flex;align-items:center;justify-content:center;height:38px;background:var(--crdim);border:1px solid var(--cr);border-radius:5px;font-family:'Fraunces',serif;font-size:14px;font-weight:700;color:var(--cr)}
+.qpe{display:flex;align-items:center;justify-content:center;height:38px;background:var(--bg);border:1px solid var(--border);border-radius:5px;font-size:11px;color:var(--text3)}
+.dbtn{width:32px;height:38px;display:flex;align-items:center;justify-content:center;border-radius:5px;border:1px solid #5a1a1a;background:var(--rdim);color:var(--red);font-size:13px;flex-shrink:0}
+.dbtn.off{background:var(--bg);border-color:var(--border);color:var(--text3)}
+
+/* risk */
+.rcard{background:var(--bg3);border-radius:var(--rs);padding:11px 13px;margin-bottom:8px;border-left:3px solid}
+.rcard.h{border-color:var(--red)}.rcard.m{border-color:var(--gold)}.rcard.l{border-color:var(--green)}
+.rtop{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:3px}
+.rname{font-size:14px;font-weight:600;color:var(--text)}
+.rtag{font-size:10px;font-weight:700;padding:2px 7px;border-radius:99px;flex-shrink:0}
+.rtag.h{background:var(--rdim);color:var(--red)}.rtag.m{background:var(--ydim);color:var(--gold)}.rtag.l{background:var(--gdim);color:var(--green)}
+.rmeta{font-size:11px;color:var(--text2)}
+
+/* grade dist */
+.gdg{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:8px}
+.gdc{background:var(--bg3);border-radius:var(--rs);padding:10px;text-align:center;border:1px solid var(--border)}
+
+/* modal */
+.ov{position:fixed;inset:0;background:rgba(0,0,0,.78);z-index:200;display:none;align-items:flex-end;justify-content:center}
+.ov.on{display:flex}
+.modal{background:var(--bg2);border:1px solid var(--border);border-radius:16px 16px 0 0;padding:22px 18px 36px;width:100%;max-width:520px;max-height:92vh;overflow-y:auto}
+.mhdl{width:38px;height:4px;background:var(--bg4);border-radius:99px;margin:0 auto 18px}
+.mtitle{font-family:'Fraunces',serif;font-size:19px;font-weight:700;color:var(--text);margin-bottom:4px}
+.msub{font-size:13px;color:var(--text2);margin-bottom:16px;line-height:1.4}
+
+/* user cards */
+.ucard{display:flex;align-items:center;gap:11px;padding:11px 13px;border-radius:8px;border:1px solid var(--border);margin-bottom:7px}
+.ucard.on{border-color:var(--cr);background:var(--crdim)}
+.uav{width:36px;height:36px;border-radius:50%;background:var(--cr);display:flex;align-items:center;justify-content:center;font-family:'Fraunces',serif;font-size:14px;font-weight:700;color:#fff;flex-shrink:0}
+.uinf{flex:1;min-width:0}
+.unm{font-size:14px;font-weight:600;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.udpt{font-size:11px;color:var(--text2)}
+
+/* profile */
+.pbanner{display:flex;align-items:flex-start;gap:11px;padding:13px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);margin-bottom:12px}
+.pav{width:44px;height:44px;border-radius:50%;background:var(--cr);display:flex;align-items:center;justify-content:center;font-family:'Fraunces',serif;font-size:18px;font-weight:800;color:#fff;flex-shrink:0}
+.pnm{font-family:'Fraunces',serif;font-size:18px;font-weight:700;color:var(--text);line-height:1.1}
+.pdpt{font-size:12px;color:var(--text2);margin-top:2px}
+.pbtns{display:flex;gap:5px;margin-top:7px;flex-wrap:wrap}
+
+/* chat */
+.cwrap{display:flex;flex-direction:column;gap:10px;max-height:52vh;overflow-y:auto;padding:2px}
+.cmsg{padding:10px 13px;border-radius:12px;max-width:90%;font-size:13px;line-height:1.55}
+.cmsg.user{background:var(--crdim);color:var(--text);border:1px solid #6a1a26;align-self:flex-end;border-bottom-right-radius:3px}
+.cmsg.ai{background:var(--bg3);color:var(--text);border:1px solid var(--border);align-self:flex-start;border-bottom-left-radius:3px}
+.crow{display:flex;gap:8px;margin-top:10px}
+.cinp{flex:1;padding:10px 11px;background:var(--bg3);border:1.5px solid var(--border);border-radius:var(--rs);color:var(--text);font-size:16px;outline:none}
+.cinp:focus{border-color:var(--cr)}
+.typing{display:flex;gap:4px;align-items:center;padding:4px}
+.typing span{width:6px;height:6px;background:var(--text2);border-radius:50%;animation:bl 1.2s infinite}
+.typing span:nth-child(2){animation-delay:.2s}
+.typing span:nth-child(3){animation-delay:.4s}
+@keyframes bl{0%,100%{opacity:.2}50%{opacity:1}}
+
+/* quick prompts */
+.qrow{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;margin-bottom:11px;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.qrow::-webkit-scrollbar{display:none}
+.qchip{flex-shrink:0;padding:7px 12px;border-radius:99px;border:1px solid var(--border);background:var(--bg3);color:var(--text2);font-size:12px;font-weight:500;white-space:nowrap}
+
+/* predictor */
+.pcard{background:var(--bg3);border:1px solid var(--border);border-radius:var(--rs);padding:10px;margin-bottom:8px}
+.pr1{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px}
+.pr2{display:grid;grid-template-columns:1fr 1fr 32px;gap:7px;align-items:flex-end}
+.mgg{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
+.mgc{padding:11px 7px;border-radius:8px;text-align:center;border:1px solid}
+
+/* db */
+.dbc{background:var(--bg3);border:1px solid var(--border);border-radius:var(--rs);padding:11px;margin-bottom:8px}
+.dbr1{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px}
+.dbr2{display:grid;grid-template-columns:1fr 1fr 1fr 32px;gap:6px;align-items:flex-end}
+
+/* misc */
+.sechd{font-family:'Fraunces',serif;font-size:12px;font-weight:600;color:var(--text2);padding:5px 11px;background:linear-gradient(90deg,var(--bg3),transparent);border-left:3px solid var(--cr);margin:10px 0;border-radius:0 4px 4px 0}
+.divider{height:1px;background:var(--border);margin:12px 0}
+.empty{text-align:center;padding:28px 14px;color:var(--text2)}
+.eico{font-size:34px;margin-bottom:9px;opacity:.4}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.footer{text-align:center;padding:12px 14px 8px;font-size:11px;color:var(--text3);border-top:1px solid var(--border2);margin-top:8px}
+.footer b{color:var(--cr);font-weight:700}
+.modetog{display:flex;background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:3px}
+.modetog button{flex:1;padding:7px 6px;border-radius:6px;border:none;font-size:12px;font-weight:600;background:transparent;color:var(--text2)}
+.modetog button.on{background:var(--cr);color:#fff}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- TOP NAV -->
+  <nav class="top-nav">
+    <div style="display:flex;align-items:center;gap:8px">
+      <div class="nav-logo">🎓</div>
+      <div>
+        <div class="nav-title">SmartCGPA</div>
+        <div class="nav-sub">EKSU · NUC 5-pt</div>
+      </div>
+    </div>
+    <div class="user-pill" onclick="openSw()">
+      <div class="up-av" id="nav-av">?</div>
+      <span class="up-nm" id="nav-nm">Set name</span>
+      <span style="color:var(--text2);font-size:9px;flex-shrink:0">▾</span>
+    </div>
+  </nav>
+
+  <!-- PAGES -->
+  <div id="pg-dash" class="page on">
+    <div class="pbanner">
+      <div class="pav" id="prof-av">?</div>
+      <div style="flex:1;min-width:0">
+        <div class="pnm" id="prof-nm">No name set</div>
+        <div class="pdpt" id="prof-dept">No department</div>
+        <div class="pbtns">
+          <button class="btn bxs bg" onclick="openProf()">Edit Profile</button>
+          <button class="btn bxs bg" onclick="openSw()">Switch User</button>
+          <button class="btn bxs bd" onclick="clearAll()">Reset</button>
+        </div>
+      </div>
+    </div>
+    <div id="dash-alerts"></div>
+    <div class="sgrid" id="dash-stats"></div>
+    <div id="dash-trend"></div>
+    <div class="card" style="padding:12px 0">
+      <div class="chd" style="padding:0 13px">Semester Summary</div>
+      <div id="dash-table"></div>
+    </div>
+    <div class="card">
+      <div class="chd">Target and Previous CGPA</div>
+      <div class="fg"><label class="fl">Target CGPA</label><input class="fi" type="number" min="0" max="5" step="0.01" placeholder="e.g. 4.50" id="inp-target" oninput="saveField('target',this.value);renderAll()"/></div>
+      <div class="g2">
+        <div class="fg" style="margin-bottom:0"><label class="fl">Prev CGPA</label><input class="fi" type="number" min="0" max="5" step="0.01" placeholder="3.82" id="inp-prevCGPA" oninput="saveField('prevCGPA',this.value);renderAll()"/></div>
+        <div class="fg" style="margin-bottom:0"><label class="fl">Prev CU</label><input class="fi" type="number" min="0" placeholder="48" id="inp-prevCU" oninput="saveField('prevCU',this.value);renderAll()"/></div>
+      </div>
+    </div>
+    <div class="footer">Created by <b>Bamidele Stephen Omotayo</b> · SmartCGPA v1.0 · EKSU</div>
+  </div>
+
+  <div id="pg-calc" class="page">
+    <h1 class="ptitle">GPA Calculator</h1>
+    <p class="psub">Add courses per semester. Data saves automatically.</p>
+    <div style="display:flex;gap:8px;margin-bottom:13px;flex-wrap:wrap">
+      <div class="modetog">
+        <button id="btn-grade" class="on" onclick="setMode('grade')">Grade</button>
+        <button id="btn-score" onclick="setMode('score')">Score %</button>
+      </div>
+      <button class="btn bs bsm" onclick="addSem()">+ Semester</button>
+      <div style="margin-left:auto;display:flex;gap:6px">
+        <input class="fi" style="width:110px" type="number" step="0.01" placeholder="Prev CGPA" id="calc-prevCGPA" oninput="saveField('prevCGPA',this.value);renderAll()"/>
+        <input class="fi" style="width:90px" type="number" placeholder="Prev CU" id="calc-prevCU" oninput="saveField('prevCU',this.value);renderAll()"/>
+      </div>
+    </div>
+    <div id="sem-list"></div>
+    <div id="cgpa-box"></div>
+  </div>
+
+  <div id="pg-ana" class="page">
+    <h1 class="ptitle">Performance Analytics</h1>
+    <p class="psub">What is helping and hurting your CGPA.</p>
+    <div id="ana-content"></div>
+  </div>
+
+  <div id="pg-pred" class="page">
+    <h1 class="ptitle">CGPA Predictor</h1>
+    <p class="psub">Plan future grades and find what you need for your target.</p>
+    <div id="pred-content"></div>
+  </div>
+
+  <div id="pg-db" class="page">
+    <h1 class="ptitle">Course Database</h1>
+    <p class="psub">Store all courses from 100L to final year.</p>
+    <div style="display:flex;gap:7px;margin-bottom:12px;flex-wrap:wrap">
+      <button class="btn bp" onclick="addDb()">+ Add Course</button>
+      <button class="btn bg bsm" onclick="loadSample()">Load Sample</button>
+      <button class="btn bd bsm" onclick="clearDb()">Clear All</button>
+    </div>
+    <div id="db-list"></div>
+  </div>
+
+  <div id="pg-tutor" class="page">
+    <h1 class="ptitle">AI Tutor</h1>
+    <p class="psub">Ask about any course, CGPA, or study strategy.</p>
+    <div class="qrow" id="qprompts"></div>
+    <div class="card" style="padding:11px 13px;margin-bottom:11px">
+      <div style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text2);margin-bottom:5px">Your Snapshot</div>
+      <div id="snap" style="font-size:13px;color:var(--text2);line-height:1.8"></div>
+    </div>
+    <div class="card">
+      <div class="cwrap" id="chat-wrap"></div>
+      <div class="divider"></div>
+      <div class="crow">
+        <input class="cinp" id="chat-inp" placeholder="Ask anything..." onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendChat()}"/>
+        <button class="btn bp" style="padding:10px 13px;flex-shrink:0" id="send-btn" onclick="sendChat()">Send</button>
+      </div>
+    </div>
+    <div class="footer">Created by <b>Bamidele Stephen Omotayo</b> · SmartCGPA v1.0 · EKSU</div>
+  </div>
+
+  <!-- BOTTOM NAV -->
+  <nav class="bot-nav">
+    <button class="bnav on" id="bn-dash" onclick="goTab('dash')"><span class="bicon">🏠</span><span class="blbl">Home</span></button>
+    <button class="bnav" id="bn-calc" onclick="goTab('calc')"><span class="bicon">🧮</span><span class="blbl">Calc</span></button>
+    <button class="bnav" id="bn-ana" onclick="goTab('ana')"><span class="bicon">📈</span><span class="blbl">Stats</span></button>
+    <button class="bnav" id="bn-pred" onclick="goTab('pred')"><span class="bicon">🔮</span><span class="blbl">Predict</span></button>
+    <button class="bnav" id="bn-db" onclick="goTab('db')"><span class="bicon">📚</span><span class="blbl">Courses</span></button>
+    <button class="bnav" id="bn-tutor" onclick="goTab('tutor')"><span class="bicon">🧠</span><span class="blbl">AI Tutor</span></button>
+  </nav>
+
+  <!-- PROFILE MODAL -->
+  <div class="ov" id="prof-modal" onclick="if(event.target===this)closeProf()">
+    <div class="modal">
+      <div class="mhdl"></div>
+      <div class="mtitle">Edit Profile</div>
+      <div class="msub">Fix your name, department or matric number anytime.</div>
+      <div class="fg"><label class="fl">Full Name</label><input class="fi" id="m-name" placeholder="e.g. Adewale Okonkwo" oninput="saveField('studentName',this.value);renderAll()"/></div>
+      <div class="fg"><label class="fl">Department</label><input class="fi" id="m-dept" placeholder="e.g. Computer Science" oninput="saveField('dept',this.value);renderAll()"/></div>
+      <div class="fg"><label class="fl">Matric Number</label><input class="fi" id="m-mat" placeholder="e.g. EKS/2021/001" oninput="saveField('matric',this.value);renderAll()"/></div>
+      <div style="display:flex;gap:8px;margin-top:4px">
+        <button class="btn bg" style="flex:1" onclick="closeProf()">Cancel</button>
+        <button class="btn bp" style="flex:1" onclick="closeProf()">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SWITCHER MODAL -->
+  <div class="ov" id="sw-modal" onclick="if(event.target===this)closeSw()">
+    <div class="modal">
+      <div class="mhdl"></div>
+      <div class="mtitle">Switch User</div>
+      <div class="msub">Each user has separate data stored independently.</div>
+      <div id="sw-list"></div>
+      <button class="btn bs bblk" style="margin-top:8px;justify-content:center" onclick="addUser()">+ Add New User</button>
+      <button class="btn bg bblk" style="margin-top:6px;justify-content:center" onclick="closeSw()">Close</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── Constants ──
+const GM={A:{p:5,min:70},B:{p:4,min:60},C:{p:3,min:50},D:{p:2,min:45},E:{p:1,min:40},F:{p:0,min:0}};
+const GR=['A','B','C','D','E','F'];
+const LV=['100','200','300','400','500'];
+const SM=['1st Semester','2nd Semester'];
+const GC={A:'var(--green)',B:'var(--blue)',C:'var(--gold)',D:'var(--orange)',E:'var(--red)',F:'var(--text3)'};
+const gc=g=>GC[g]||'var(--text2)';
+function gCls(g){
+  if(g>=4.5)return{lb:'First Class',c:'var(--green)',s:'1st'};
+  if(g>=3.5)return{lb:'2nd Upper',c:'var(--blue)',s:'2:1'};
+  if(g>=2.4)return{lb:'2nd Lower',c:'var(--gold)',s:'2:2'};
+  if(g>=1.5)return{lb:'Third Class',c:'var(--orange)',s:'3rd'};
+  if(g>=1.0)return{lb:'Pass',c:'var(--text2)',s:'Pass'};
+  return{lb:'Fail',c:'var(--red)',s:'Fail'};
+}
+const s2g=s=>{const n=parseFloat(s);if(isNaN(n))return'';if(n>=70)return'A';if(n>=60)return'B';if(n>=50)return'C';if(n>=45)return'D';if(n>=40)return'E';return'F';};
+const calcGPA=cs=>{let qp=0,cu=0;cs.forEach(c=>{const u=parseFloat(c.unit),g=c.grade?GM[c.grade]?.p:null;if(u&&g!=null){qp+=u*g;cu+=u;}});return{gpa:cu>0?qp/cu:null,tQP:qp,tCU:cu};};
+const ini=nm=>(nm||'?').split(' ').map(w=>w[0]||'').join('').slice(0,2).toUpperCase();
+const uid=()=>Date.now()+Math.random();
+const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+
+// ── Storage ──
+const AK='eksu_slot',SK='eksu_slots',DK=s=>'eksu_d'+s;
+let activeSlot=parseInt(localStorage.getItem(AK)||'0');
+let allSlots=JSON.parse(localStorage.getItem(SK)||'[0]');
+const loadD=s=>{try{return JSON.parse(localStorage.getItem(DK(s)))||null;}catch{return null;}};
+const saveD=(s,d)=>{try{localStorage.setItem(DK(s),JSON.stringify(d));}catch{}};
+const dDef=()=>({studentName:'',matric:'',dept:'',semesters:[newSem('100','1st Semester')],prevCGPA:'',prevCU:'',target:'',courseDB:[]});
+function newSem(lv,sm){return{id:uid(),level:lv,sem:sm,courses:[newC()]};}
+function newC(){return{id:uid(),code:'',name:'',unit:'',grade:'',score:''};}
+
+let D=loadD(activeSlot)||dDef();
+let inputMode='grade';
+let predCourses=[{id:1,code:'',name:'',unit:'3',grade:'B'},{id:2,code:'',name:'',unit:'3',grade:'B'}];
+let chatHistory=[{r:'ai',t:'Hi! I am your EKSU Academic AI Tutor.\n\nAsk me to:\n- Explain any course topic step by step\n- Analyse your CGPA\n- Suggest study strategies\n\nWhat do you need help with?'}];
+let aiLoading=false;
+let currentTab='dash';
+
+// ── Save & Field helpers ──
+function saveField(k,v){D[k]=v;saveD(activeSlot,D);}
+function saveD2(){saveD(activeSlot,D);}
+
+// ── Tab navigation ──
+function goTab(t){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.bnav').forEach(b=>b.classList.remove('on'));
+  document.getElementById('pg-'+t).classList.add('on');
+  document.getElementById('bn-'+t).classList.add('on');
+  currentTab=t;
+  renderAll();
+}
+
+// ── Computed values ──
+function compute(){
+  const semR=D.semesters.map(s=>{const r=calcGPA(s.courses);return{...s,...r};});
+  const pQP=(parseFloat(D.prevCGPA||0)||0)*(parseFloat(D.prevCU||0)||0);
+  const pCU=parseFloat(D.prevCU||0)||0;
+  const tQP=semR.reduce((a,s)=>a+(s.tQP||0),pQP);
+  const tCU=semR.reduce((a,s)=>a+(s.tCU||0),pCU);
+  const cgpa=tCU>0?tQP/tCU:null;
+  const cls=cgpa!=null?gCls(cgpa):null;
+  const allC=D.semesters.flatMap(s=>s.courses.filter(c=>c.name&&c.unit&&c.grade).map(c=>{
+    const cu=parseFloat(c.unit),gp=GM[c.grade]?.p||0;
+    return{...c,cu,gp,qp:cu*gp,sn:s.level+'L '+s.sem.replace(' Semester',''),
+      risk:(c.grade==='F'||c.grade==='E')?'high':(c.grade==='D'||cu>=3)?'medium':'low'};
+  }));
+  const rC=[...allC].sort((a,b)=>({high:0,medium:1,low:2}[a.risk]-{high:0,medium:1,low:2}[b.risk]||b.cu-a.cu));
+  return{semR,tQP,tCU,cgpa,cls,pct:cgpa?(cgpa/5)*100:0,allC,rC};
+}
+
+// ── Main render ──
+function renderAll(){
+  const {semR,tQP,tCU,cgpa,cls,pct,allC,rC}=compute();
+  syncInputs();
+  renderDash(semR,tQP,tCU,cgpa,cls,pct,rC);
+  if(currentTab==='calc')renderCalc(semR,tQP,tCU,cgpa,cls,pct);
+  if(currentTab==='ana')renderAna(semR,allC,rC,tQP,tCU,cgpa,cls);
+  if(currentTab==='pred')renderPred(tQP,tCU,cgpa,cls);
+  if(currentTab==='db')renderDb();
+  if(currentTab==='tutor')renderTutor(cgpa,cls,rC);
+  renderNav();
+  renderModals();
+}
+
+function syncInputs(){
+  const set=(id,v)=>{const el=document.getElementById(id);if(el&&document.activeElement!==el)el.value=v||'';};
+  set('inp-target',D.target);set('inp-prevCGPA',D.prevCGPA);set('inp-prevCU',D.prevCU);
+  set('calc-prevCGPA',D.prevCGPA);set('calc-prevCU',D.prevCU);
+  set('m-name',D.studentName);set('m-dept',D.dept);set('m-mat',D.matric);
+}
+
+function renderNav(){
+  const av=ini(D.studentName);
+  document.getElementById('nav-av').textContent=av;
+  document.getElementById('nav-nm').textContent=D.studentName||'Set name';
+}
+
+// ── Dashboard ──
+function renderDash(semR,tQP,tCU,cgpa,cls,pct,rC){
+  document.getElementById('prof-av').textContent=ini(D.studentName);
+  document.getElementById('prof-nm').textContent=D.studentName||'No name set';
+  const dept=D.dept||'No department';
+  const mat=D.matric?' · '+D.matric:'';
+  document.getElementById('prof-dept').textContent=dept+mat;
+
+  let alerts='';
+  if(!D.studentName)alerts+=`<div class="alt aw" onclick="openProf()" style="cursor:pointer">Tap here to set your name and department.</div>`;
+  const hiRisk=rC.filter(c=>c.risk==='high');
+  if(hiRisk.length>0)alerts+=`<div class="alt ad">High-risk: ${esc(hiRisk.map(c=>c.name||c.code).slice(0,3).join(', '))}</div>`;
+  if(cgpa!=null&&cgpa>=4.5)alerts+=`<div class="alt ao">First Class Honours track! Keep it up!</div>`;
+  if(cgpa!=null&&D.target&&cgpa<parseFloat(D.target))alerts+=`<div class="alt aw">CGPA ${cgpa.toFixed(2)} is below target ${D.target}. Check Predictor.</div>`;
+  document.getElementById('dash-alerts').innerHTML=alerts;
+
+  const clr=cgpa!=null?cls.c:'var(--border)';
+  document.getElementById('dash-stats').innerHTML=`
+    <div class="sc" style="border-top-color:${clr}">
+      <div class="slbl">CGPA</div>
+      <div class="sval" style="color:${cgpa!=null?cls.c:'var(--text3)'}">${cgpa!=null?cgpa.toFixed(2):'—'}</div>
+      <div class="ssub">${cls?.lb||'No data yet'}</div>
+      ${cgpa!=null?`<div class="prog" style="margin-top:7px"><div class="pfill" style="width:${pct}%;background:${cls.c}"></div></div>`:''}
+    </div>
+    <div class="sc" style="border-top-color:var(--blue)">
+      <div class="slbl">Credit Units</div>
+      <div class="sval" style="color:var(--blue)">${tCU||'—'}</div>
+      <div class="ssub">${tQP?tQP.toFixed(1)+' QP':'—'}</div>
+    </div>
+    <div class="sc" style="border-top-color:var(--purple)">
+      <div class="slbl">Semesters</div>
+      <div class="sval" style="color:var(--purple)">${D.semesters.length}</div>
+      <div class="ssub">${semR.filter(s=>s.gpa!=null).length} done</div>
+    </div>
+    <div class="sc" style="border-top-color:var(--gold)">
+      <div class="slbl">Target</div>
+      <div class="sval" style="color:var(--gold)">${D.target||'—'}</div>
+      <div class="ssub">${D.target?(cgpa&&cgpa>=parseFloat(D.target)?'Achieved!':'Pushing...'):'Not set'}</div>
+    </div>`;
+
+  const done=semR.filter(s=>s.gpa!=null);
+  if(done.length>1){
+    const bars=done.map(s=>{const c=gCls(s.gpa);return`<div class="tcol"><div class="tval">${s.gpa.toFixed(1)}</div><div class="tbar" style="height:${(s.gpa/5)*100}%;background:${c.c};opacity:.85"></div><div class="tlbl">${s.level}L</div></div>`;}).join('');
+    document.getElementById('dash-trend').innerHTML=`<div class="card"><div class="chd">GPA Trend</div><div class="twrap">${bars}</div></div>`;
+  } else document.getElementById('dash-trend').innerHTML='';
+
+  if(done.length===0){
+    document.getElementById('dash-table').innerHTML=`<div class="empty"><div class="eico">📚</div><p>No data yet. Go to Calculator.</p></div>`;
+  } else {
+    let rows=done.map(s=>{const c=gCls(s.gpa);return`<tr><td>${s.level}L</td><td style="font-size:11px">${s.sem.replace(' Semester','')}</td><td>${s.tCU}</td><td style="font-size:12px">${s.tQP.toFixed(1)}</td><td style="font-family:'Fraunces',serif;font-weight:700;color:${c.c};font-size:16px">${s.gpa.toFixed(2)}</td><td><span class="bdg" style="background:${c.c}22;color:${c.c};border:1px solid ${c.c}44">${c.s}</span></td></tr>`;}).join('');
+    if(cgpa!=null)rows+=`<tr style="background:var(--bg3)"><td colspan="2" style="font-weight:700">TOTAL</td><td style="font-weight:700">${tCU}</td><td style="font-weight:700;font-size:12px">${tQP.toFixed(1)}</td><td style="font-family:'Fraunces',serif;font-weight:800;color:${cls.c};font-size:18px">${cgpa.toFixed(2)}</td><td><span class="bdg" style="background:${cls.c}22;color:${cls.c};border:1px solid ${cls.c}44">${cls.s}</span></td></tr>`;
+    document.getElementById('dash-table').innerHTML=`<div class="twrap2"><table class="t"><thead><tr><th>Level</th><th>Sem</th><th>CU</th><th>QP</th><th>GPA</th><th>Class</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+  }
+}
+
+// ── Calculator ──
+function setMode(m){
+  inputMode=m;
+  document.getElementById('btn-grade').classList.toggle('on',m==='grade');
+  document.getElementById('btn-score').classList.toggle('on',m==='score');
+  renderAll();
+}
+
+function renderCalc(semR,tQP,tCU,cgpa,cls,pct){
+  let html='';
+  D.semesters.forEach((sem,si)=>{
+    const r=calcGPA(sem.courses);
+    const sc=r.gpa!=null?gCls(r.gpa):null;
+    const cd=sem.courses.length>1;
+    let scoreHint='';
+    if(inputMode==='score')scoreHint='<div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:9px">'+GR.map(g=>`<span style="font-size:10px;padding:2px 7px;border-radius:99px;background:${gc(g)}22;color:${gc(g)};font-weight:700">${g} ${GM[g].min}%+</span>`).join('')+'</div>';
+    let courses=sem.courses.map(c=>{
+      const rg=inputMode==='score'?s2g(c.score):c.grade;
+      const gp=rg?GM[rg]?.p:null;
+      const qp=parseFloat(c.unit)&&gp!=null?parseFloat(c.unit)*gp:null;
+      const gradeOpts=GR.map(g=>`<option value="${g}" ${c.grade===g?'selected':''}>${g} (${GM[g].p}.0)</option>`).join('');
+      const gradeInput=inputMode==='grade'
+        ?`<select class="sel" style="color:${c.grade?gc(c.grade):'var(--text2)'};font-weight:${c.grade?700:400}" onchange="updC('${sem.id}','${c.id}','grade',this.value)"><option value="">—</option>${gradeOpts}</select>`
+        :`<input class="inp" type="number" min="0" max="100" placeholder="0-100" value="${esc(c.score)}" style="color:${rg?gc(rg):'var(--text)'};font-weight:${rg?700:400}" oninput="updC('${sem.id}','${c.id}','score',this.value)"/>`;
+      const qpEl=qp!=null?`<div class="qpb">${qp.toFixed(1)}</div>`:`<div class="qpe">QP</div>`;
+      return `<div class="cc">
+        <div class="cr1">
+          <div><div class="cml">Code</div><input class="inp" style="font-family:monospace;font-size:12px" placeholder="MTH 101" value="${esc(c.code)}" oninput="updC('${sem.id}','${c.id}','code',this.value.toUpperCase())"/></div>
+          <div><div class="cml">Course Title</div><input class="inp" placeholder="e.g. Calculus I" value="${esc(c.name)}" oninput="updC('${sem.id}','${c.id}','name',this.value)"/></div>
+        </div>
+        <div class="cr2">
+          <div><div class="cml">Units</div><input class="inp" type="number" min="1" max="6" placeholder="3" value="${esc(c.unit)}" oninput="updC('${sem.id}','${c.id}','unit',this.value)"/></div>
+          <div><div class="cml">${inputMode==='score'?'Score %':'Grade'}</div>${gradeInput}</div>
+          ${qpEl}
+          <button class="dbtn ${cd?'':'off'}" onclick="${cd?`delC('${sem.id}','${c.id}')`:''}"  >X</button>
+        </div>
+      </div>`;
+    }).join('');
+    const gpaTxt=r.gpa!=null?`<div style="font-family:'Fraunces',serif;font-size:12px;color:var(--text2)">${r.tQP.toFixed(1)} QP / ${r.tCU} CU = <b style="color:var(--green);font-size:15px">${r.gpa.toFixed(2)}</b></div>`:'';
+    const removeBt=D.semesters.length>1?`<button class="btn bd bxs" onclick="delSem('${sem.id}')">Remove</button>`:'';
+    const lvOpts=LV.map(l=>`<option value="${l}" ${sem.level===l?'selected':''}>${l}L</option>`).join('');
+    const smOpts=SM.map(s=>`<option value="${s}" ${sem.sem===s?'selected':''}>${s}</option>`).join('');
+    const gpaShow=r.gpa!=null?`<span style="font-family:'Fraunces',serif;font-size:14px;font-weight:700;color:${sc.c}">GPA: ${r.gpa.toFixed(2)}</span>`:'';
+    html+=`<div class="card" style="padding:0;overflow:hidden;margin-bottom:13px">
+      <div style="padding:9px 11px;background:var(--bg3);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:7px">
+        <div style="display:flex;align-items:center;gap:7px;flex-wrap:wrap">
+          <select class="sel" style="width:62px;font-size:13px" onchange="updSem('${sem.id}','level',this.value)">${lvOpts}</select>
+          <select class="sel" style="width:128px;font-size:13px" onchange="updSem('${sem.id}','sem',this.value)">${smOpts}</select>
+          ${gpaShow}
+        </div>
+        ${removeBt}
+      </div>
+      <div style="padding:10px 11px">${scoreHint}${courses}</div>
+      <div style="padding:9px 11px;background:var(--bg3);border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center">
+        <button class="btn bg bsm" onclick="addCourse('${sem.id}')">+ Course</button>
+        ${gpaTxt}
+      </div>
+    </div>`;
+  });
+  document.getElementById('sem-list').innerHTML=html;
+  if(cgpa!=null){
+    document.getElementById('cgpa-box').innerHTML=`<div class="card" style="text-align:center;padding:18px 14px">
+      <div style="font-size:11px;color:var(--text2);letter-spacing:2px;text-transform:uppercase;margin-bottom:5px">Cumulative GPA</div>
+      <div style="font-family:'Fraunces',serif;font-size:54px;font-weight:900;color:${cls.c};line-height:1">${cgpa.toFixed(2)}<span style="font-size:17px;color:var(--text2);font-weight:400"> / 5.00</span></div>
+      <div style="margin-top:9px;display:inline-block;background:${cls.c}22;color:${cls.c};padding:5px 15px;border-radius:99px;font-size:13px;font-weight:700;border:1px solid ${cls.c}44">${cls.lb}</div>
+      <div class="prog" style="margin-top:13px"><div class="pfill" style="width:${pct}%;background:${cls.c}"></div></div>
+      <div style="display:flex;justify-content:center;gap:18px;margin-top:7px;font-size:12px;color:var(--text2)">
+        <span>QP: <b style="color:var(--text)">${tQP.toFixed(1)}</b></span>
+        <span>CU: <b style="color:var(--text)">${tCU}</b></span>
+      </div>
+    </div>`;
+  } else document.getElementById('cgpa-box').innerHTML='';
+}
+
+// ── Analytics ──
+function renderAna(semR,allC,rC,tQP,tCU,cgpa,cls){
+  if(allC.length===0){document.getElementById('ana-content').innerHTML='<div class="empty card"><div class="eico">📊</div><p>Add courses in Calculator tab first.</p></div>';return;}
+  const trend=semR.filter(s=>s.gpa!=null);
+  let trendHtml='';
+  if(trend.length>1){
+    const bars=trend.map(s=>{const c=gCls(s.gpa);return`<div class="tcol"><div class="tval">${s.gpa.toFixed(2)}</div><div class="tbar" style="height:${(s.gpa/5)*100}%;background:${c.c};opacity:.85"></div><div class="tlbl">${s.level}L</div></div>`;}).join('');
+    trendHtml=`<div class="card"><div class="chd">GPA Per Semester</div><div class="twrap" style="height:85px">${bars}</div></div>`;
+  }
+  const riskHtml=rC.map(c=>{
+    const imp=cgpa!=null&&tCU>0?((tQP-c.qp+c.cu*5)/tCU-cgpa).toFixed(2):null;
+    const helpBtn=c.risk==='high'?`<button class="btn bxs" style="margin-left:8px;background:var(--rdim);color:var(--red);border:1px solid var(--red)" onclick="goTab('tutor');document.getElementById('chat-inp').value='Help me with ${esc(c.name||c.code)}. I got ${c.grade}.'">Get Help</button>`:'';
+    const impHtml=imp!=null&&parseFloat(imp)>0?`<div style="font-size:11px;color:var(--text2);margin-top:4px">If A: CGPA +<span style="color:var(--green);font-weight:700">${imp}</span>${helpBtn}</div>`:'';
+    return`<div class="rcard ${c.risk[0]}">
+      <div class="rtop"><div><div class="rname">${esc(c.name||c.code||'Unnamed')}</div><div class="rmeta">${esc(c.sn)} · ${c.cu} units · Grade: <span style="color:${gc(c.grade)};font-weight:700">${c.grade}</span></div></div>
+      <span class="rtag ${c.risk[0]}">${c.risk==='high'?'High Risk':c.risk==='medium'?'Medium':'Low'}</span></div>${impHtml}
+    </div>`;
+  }).join('');
+  let distHtml=GR.map(g=>{
+    const count=allC.filter(c=>c.grade===g).length;if(!count)return'';
+    const p=Math.round(count/allC.length*100);
+    return`<div class="gdc" style="border-color:${gc(g)}44"><div style="font-family:'Fraunces',serif;font-size:22px;font-weight:800;color:${gc(g)}">${g}</div><div style="font-size:17px;font-weight:700">${count}</div><div style="font-size:10px;color:var(--text2)">${p}%</div><div class="prog" style="margin-top:5px"><div class="pfill" style="width:${p}%;background:${gc(g)}"></div></div></div>`;
+  }).join('');
+  document.getElementById('ana-content').innerHTML=`
+    <div class="sgrid">
+      <div class="sc" style="border-top-color:var(--green)"><div class="slbl">CGPA</div><div class="sval" style="color:var(--green)">${cgpa!=null?cgpa.toFixed(2):'—'}</div><div class="ssub">${cls?.lb||''}</div></div>
+      <div class="sc" style="border-top-color:var(--red)"><div class="slbl">High Risk</div><div class="sval" style="color:var(--red)">${rC.filter(c=>c.risk==='high').length}</div><div class="ssub">D/E/F grades</div></div>
+      <div class="sc" style="border-top-color:var(--gold)"><div class="slbl">Med Risk</div><div class="sval" style="color:var(--gold)">${rC.filter(c=>c.risk==='medium').length}</div><div class="ssub">D or heavy units</div></div>
+      <div class="sc" style="border-top-color:var(--blue)"><div class="slbl">Courses</div><div class="sval" style="color:var(--blue)">${allC.length}</div><div class="ssub">${tCU} units</div></div>
+    </div>
+    ${trendHtml}
+    <div style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:8px">Course Risk Analysis</div>
+    ${riskHtml}
+    <div class="card" style="margin-top:4px"><div class="chd">Grade Distribution</div><div class="gdg">${distHtml}</div></div>`;
+}
+
+// ── Predictor ──
+function renderPred(tQP,tCU,cgpa,cls){
+  const pQP=predCourses.reduce((a,c)=>{const u=parseFloat(c.unit),g=c.grade?GM[c.grade]?.p:null;return a+(u&&g!=null?u*g:0);},0);
+  const pCU=predCourses.reduce((a,c)=>a+(parseFloat(c.unit)||0),0);
+  const pj=(tQP||0)+pQP, pc=(tCU||0)+pCU;
+  const proj=pc>0?pj/pc:null;
+  const pCls=proj!=null?gCls(proj):null;
+  const tgt=parseFloat(D.target);
+  let projHtml='';
+  if(proj!=null){
+    const chg=proj-(cgpa||0);
+    projHtml=`<div style="padding:13px;background:var(--bg3);border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
+      <div><div style="font-size:10px;color:var(--text2);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:2px">Projected CGPA</div>
+      <div style="font-family:'Fraunces',serif;font-size:34px;font-weight:800;color:${pCls.c};line-height:1">${proj.toFixed(2)}</div>
+      <div style="font-size:12px;color:${pCls.c};font-weight:600;margin-top:2px">${pCls.lb}</div></div>
+      <div style="text-align:right;font-size:12px">
+        ${cgpa?`<div style="color:var(--text2)">Was: <b style="color:var(--text)">${cgpa.toFixed(2)}</b></div>`:''}
+        <div style="color:var(--text2)">Change: <b style="color:${chg>=0?'var(--green)':'var(--red)'}">${chg>=0?'+':''}${chg.toFixed(3)}</b></div>
+        ${D.target&&!isNaN(tgt)?`<div style="margin-top:4px">${proj>=tgt?'<span class="bdg" style="background:var(--gdim);color:var(--green)">Target met!</span>':'<span class="bdg" style="background:var(--rdim);color:var(--red)">Still '+(tgt-proj).toFixed(3)+' away</span>'}</div>`:''}
+      </div>
+    </div>`;
+  }
+  const predRows=predCourses.map(c=>{
+    const go=GR.map(g=>`<option value="${g}" ${c.grade===g?'selected':''}>${g} (${GM[g].p}.0)</option>`).join('');
+    const del=predCourses.length>1?`<button class="dbtn" onclick="delPredC(${c.id})">X</button>`:'';
+    return`<div class="pcard">
+      <div class="pr1">
+        <div><div class="cml">Code</div><input class="inp" style="font-family:monospace;font-size:12px" value="${esc(c.code)}" placeholder="MTH 101" oninput="updPredC(${c.id},'code',this.value.toUpperCase())"/></div>
+        <div><div class="cml">Course Name</div><input class="inp" value="${esc(c.name)}" placeholder="Course name" oninput="updPredC(${c.id},'name',this.value)"/></div>
+      </div>
+      <div class="pr2">
+        <div><div class="cml">Units</div><input class="inp" type="number" min="1" max="6" value="${esc(c.unit)}" oninput="updPredC(${c.id},'unit',this.value)"/></div>
+        <div><div class="cml">Grade</div><select class="sel" style="color:${gc(c.grade)};font-weight:700" onchange="updPredC(${c.id},'grade',this.value)">${go}</select></div>
+        ${del}
+      </div>
+    </div>`;
+  }).join('');
+  // Min grade calc
+  const mgUnit=3;
+  const mgHtml=GR.map(g=>{const nQ=(tQP||0)+mgUnit*GM[g].p,nC=(tCU||0)+mgUnit,nc2=nQ/nC,meets=nc2>=tgt;return`<div class="mgc" style="background:${meets?'var(--gdim)':'var(--bg3)'};border-color:${meets?'var(--green)':'var(--border)'}"><div style="font-family:'Fraunces',serif;font-size:24px;font-weight:800;color:${gc(g)}">${g}</div><div style="font-family:'Fraunces',serif;font-size:14px;font-weight:700;color:${meets?'var(--green)':'var(--text)'}">${nc2.toFixed(2)}</div><div style="font-size:10px;color:var(--text2);margin-top:1px">${meets?'Met':'Below'}</div></div>`;}).join('');
+  let minGradeHtml='';
+  if(D.target&&cgpa!=null&&cgpa<tgt){
+    minGradeHtml=`<div class="card"><div class="chd">Minimum Grade Needed (3-unit course)</div><div class="mgg">${mgHtml}</div></div>`;
+  }
+  let tgtAlert='';
+  if(D.target&&cgpa!=null){
+    if(cgpa>=tgt)tgtAlert=`<div class="alt ao" style="margin-bottom:0">Target already achieved!</div>`;
+    else tgtAlert=`<div class="alt ai" style="margin-bottom:0">Need ${(tgt*tCU-tQP).toFixed(1)} more quality points to reach ${D.target}.</div>`;
+  }
+  document.getElementById('pred-content').innerHTML=`
+    <div class="card">
+      <div class="chd">Current Position</div>
+      <div class="g2" style="margin-bottom:10px">
+        <div style="padding:10px 11px;background:var(--bg3);border-radius:8px;text-align:center">
+          <div style="font-size:10px;color:var(--text2);text-transform:uppercase;letter-spacing:1px;margin-bottom:2px">Current CGPA</div>
+          <div style="font-family:'Fraunces',serif;font-size:26px;font-weight:800;color:${cls?.c||'var(--text3)'}">${cgpa?cgpa.toFixed(2):'—'}</div>
+          <div style="font-size:11px;color:${cls?.c||'var(--text2)'}">${cls?.lb||'No data'}</div>
+        </div>
+        <div style="padding:10px 11px;background:var(--bg3);border-radius:8px">
+          <div style="font-size:10px;color:var(--text2);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">Target CGPA</div>
+          <input class="fi" style="text-align:center;font-size:20px;font-family:'Fraunces',serif;font-weight:800;color:var(--gold);padding:5px 8px" type="number" min="0" max="5" step="0.01" placeholder="4.50" value="${esc(D.target)}" oninput="saveField('target',this.value);renderAll()"/>
+        </div>
+      </div>
+      ${tgtAlert}
+    </div>
+    <div class="card" style="padding:0;overflow:hidden">
+      <div style="padding:11px 13px;border-bottom:1px solid var(--border)"><div class="chd" style="margin-bottom:0">What-If Grade Planner</div></div>
+      <div style="padding:10px 11px">${predRows}</div>
+      <div style="padding:10px 11px;border-top:1px solid var(--border)"><button class="btn bg bsm bblk" style="justify-content:center" onclick="addPredC()">+ Add Course</button></div>
+      ${projHtml}
+    </div>
+    ${minGradeHtml}`;
+}
+
+// ── Course DB ──
+function renderDb(){
+  let html='';
+  LV.forEach(lv=>{
+    const cs=D.courseDB.filter(c=>c.level===lv);
+    if(!cs.length)return;
+    html+=`<div class="sechd">${lv} Level — ${cs.length} course${cs.length!==1?'s':''}</div>`;
+    cs.forEach(c=>{
+      const lvOpts=LV.map(l=>`<option value="${l}" ${c.level===l?'selected':''}>${l}</option>`).join('');
+      const grOpts=`<option value="">—</option>`+GR.map(g=>`<option value="${g}" ${c.grade===g?'selected':''}>${g}</option>`).join('');
+      html+=`<div class="dbc">
+        <div class="dbr1">
+          <div><div class="cml">Code</div><input class="inp" style="font-family:monospace;font-size:12px" value="${esc(c.code)}" placeholder="MTH 101" oninput="updDb('${c.id}','code',this.value.toUpperCase())"/></div>
+          <div><div class="cml">Title</div><input class="inp" value="${esc(c.name)}" placeholder="Course name" oninput="updDb('${c.id}','name',this.value)"/></div>
+        </div>
+        <div class="dbr2">
+          <div><div class="cml">Units</div><input class="inp" type="number" min="1" max="6" value="${esc(c.unit)}" placeholder="3" oninput="updDb('${c.id}','unit',this.value)"/></div>
+          <div><div class="cml">Level</div><select class="sel" onchange="updDb('${c.id}','level',this.value)">${lvOpts}</select></div>
+          <div><div class="cml">Grade</div><select class="sel" style="color:${c.grade?gc(c.grade):'var(--text2)'};font-weight:${c.grade?700:400}" onchange="updDb('${c.id}','grade',this.value)">${grOpts}</select></div>
+          <button class="dbtn" style="margin-top:16px" onclick="delDb('${c.id}')">X</button>
+        </div>
+      </div>`;
+    });
+  });
+  if(!html)html='<div class="empty card"><div class="eico">📚</div><p>No courses yet. Add your courses up to final year!</p></div>';
+  document.getElementById('db-list').innerHTML=html;
+}
+
+// ── AI Tutor ──
+function renderTutor(cgpa,cls,rC){
+  const prompts=['Analyse my performance','Study strategies','Explain CGPA formula','How to get First Class',...rC.filter(c=>c.risk==='high').slice(0,2).map(c=>'Explain '+c.name)];
+  document.getElementById('qprompts').innerHTML=prompts.map(q=>`<button class="qchip" onclick="sendChat('${esc(q)}')">${esc(q)}</button>`).join('');
+  document.getElementById('snap').innerHTML=`CGPA: <b style="color:${cls?.c||'var(--text)'}">${cgpa?cgpa.toFixed(2)+' ('+cls?.lb+')':'No data'}</b> · Target: <b style="color:var(--gold)">${D.target||'Not set'}</b> · High-risk: <b style="color:var(--red)">${rC.filter(c=>c.risk==='high').length} course${rC.filter(c=>c.risk==='high').length!==1?'s':''}</b>`;
+  renderChat();
+}
+
+function renderChat(){
+  const wrap=document.getElementById('chat-wrap');
+  if(!wrap)return;
+  wrap.innerHTML=chatHistory.map(m=>{
+    const lines=m.t.split('\n').map(l=>{
+      if(!l.trim())return'<div style="height:5px"></div>';
+      const parts=l.split('**');
+      const safe=parts.map((p,i)=>i%2===1?'<strong style="color:var(--gold)">'+esc(p)+'</strong>':esc(p)).join('');
+      return'<p style="margin:3px 0;line-height:1.6">'+safe+'</p>';
+    }).join('');
+    return`<div class="cmsg ${m.r}">${lines}</div>`;
+  }).join('');
+  if(aiLoading)wrap.innerHTML+=`<div class="cmsg ai"><div class="typing"><span></span><span></span><span></span></div></div>`;
+  wrap.scrollTop=wrap.scrollHeight;
+}
+
+async function sendChat(override){
+  const inp=document.getElementById('chat-inp');
+  const msg=override||inp.value.trim();
+  if(!msg||aiLoading)return;
+  inp.value='';
+  chatHistory.push({r:'user',t:msg});
+  aiLoading=true;
+  renderChat();
+  const {cgpa,cls,rC}=compute();
+  const sys='You are an EKSU academic AI tutor. Student: '+(D.studentName||'Student')+', Dept: '+(D.dept||'N/A')+', CGPA: '+(cgpa?cgpa.toFixed(2)+' ('+cls?.lb+')':'not computed')+', Target: '+(D.target||'not set')+', High-risk: '+(rC.filter(c=>c.risk==='high').map(c=>c.name||c.code).join(', ')||'none')+'. NUC 5-pt: A=5(70%+),B=4(60%),C=3(50%),D=2(45%),E=1(40%),F=0(<40%). Be encouraging, practical, step-by-step.';
+  try{
+    const msgs=chatHistory.slice(-8).map(m=>({role:m.r==='user'?'user':'assistant',content:m.t}));
+    const res=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,system:sys,messages:msgs})
+    });
+    const d=await res.json();
+    chatHistory.push({r:'ai',t:d.content?.[0]?.text||'Sorry, please try again.'});
+  }catch{chatHistory.push({r:'ai',t:'Connection error. Please check your internet and try again.'});}
+  aiLoading=false;
+  renderChat();
+}
+
+// ── Mutations ──
+function addSem(){
+  const last=D.semesters[D.semesters.length-1];
+  const lv=last?.level||'100';
+  const sm=last?.sem==='1st Semester'?'2nd Semester':'1st Semester';
+  const nLv=last?.sem==='2nd Semester'?String(Math.min(500,parseInt(lv)+100)):lv;
+  D.semesters.push(newSem(nLv,sm));saveD2();renderAll();
+}
+function delSem(id){D.semesters=D.semesters.filter(s=>s.id!=id);saveD2();renderAll();}
+function updSem(id,f,v){const s=D.semesters.find(s=>s.id==id);if(s){s[f]=v;saveD2();renderAll();}}
+function addCourse(sid){const s=D.semesters.find(s=>s.id==sid);if(s){s.courses.push(newC());saveD2();renderAll();}}
+function updC(sid,cid,f,v){
+  const s=D.semesters.find(s=>s.id==sid);if(!s)return;
+  const c=s.courses.find(c=>c.id==cid);if(!c)return;
+  c[f]=v;
+  if(f==='score'){const g=s2g(v);if(g)c.grade=g;}
+  saveD2();renderAll();
+}
+function delC(sid,cid){const s=D.semesters.find(s=>s.id==sid);if(s){s.courses=s.courses.filter(c=>c.id!=cid);saveD2();renderAll();}}
+function addDb(){D.courseDB.push({id:uid(),code:'',name:'',unit:'',level:'100',sem:'1st Semester',grade:''});saveD2();renderAll();}
+function updDb(id,f,v){const c=D.courseDB.find(c=>c.id==id);if(c){c[f]=v;saveD2();renderAll();}}
+function delDb(id){D.courseDB=D.courseDB.filter(c=>c.id!=id);saveD2();renderAll();}
+function loadSample(){D.courseDB.push({id:uid(),code:'MTH 101',name:'Elementary Mathematics I',unit:'3',level:'100',sem:'1st Semester',grade:''},{id:uid(),code:'PHY 101',name:'General Physics I',unit:'3',level:'100',sem:'1st Semester',grade:''},{id:uid(),code:'ENG 101',name:'Use of English',unit:'2',level:'100',sem:'1st Semester',grade:''});saveD2();renderAll();}
+function clearDb(){if(confirm('Clear all courses?')){D.courseDB=[];saveD2();renderAll();}}
+function clearAll(){if(confirm('Reset all data?')){D=dDef();saveD2();renderAll();}}
+function addPredC(){predCourses.push({id:Date.now(),code:'',name:'',unit:'3',grade:'B'});renderAll();}
+function delPredC(id){if(predCourses.length>1){predCourses=predCourses.filter(c=>c.id!=id);renderAll();}}
+function updPredC(id,f,v){const c=predCourses.find(c=>c.id==id);if(c){c[f]=v;renderAll();}}
+
+// ── Modals ──
+function openProf(){document.getElementById('prof-modal').classList.add('on');syncInputs();setTimeout(()=>document.getElementById('m-name').focus(),100);}
+function closeProf(){document.getElementById('prof-modal').classList.remove('on');}
+function openSw(){renderModals();document.getElementById('sw-modal').classList.add('on');}
+function closeSw(){document.getElementById('sw-modal').classList.remove('on');}
+
+function renderModals(){
+  const list=document.getElementById('sw-list');
+  if(!list)return;
+  list.innerHTML=allSlots.map(s=>{
+    const sd=s===activeSlot?D:loadD(s)||dDef();
+    const nm=sd.studentName||'New User';
+    const dp=sd.dept||'No dept';
+    const isActive=s===activeSlot;
+    const btns=isActive
+      ?`<button class="btn bxs bg" onclick="closeSw();openProf()">Edit</button>`
+      :`<button class="btn bxs bp" onclick="switchSlot(${s})">Switch</button><button class="btn bxs bd" onclick="removeSlot(${s})">X</button>`;
+    return`<div class="ucard ${isActive?'on':''}">
+      <div class="uav" style="background:${isActive?'var(--cr)':'var(--bg4)'}">${ini(nm)}</div>
+      <div class="uinf" onclick="${!isActive?'switchSlot('+s+')':''}">
+        <div class="unm">${esc(nm)}</div>
+        <div class="udpt">${esc(dp)}${isActive?' · Active':''}</div>
+      </div>
+      <div style="display:flex;gap:5px;flex-shrink:0">${btns}</div>
+    </div>`;
+  }).join('');
+}
+
+function switchSlot(s){
+  activeSlot=s;localStorage.setItem(AK,String(s));
+  D=loadD(s)||dDef();
+  closeSw();goTab('dash');
+  chatHistory=[{r:'ai',t:'Hi! How can I help you today?'}];
+  renderAll();
+}
+function addUser(){
+  const ns=Math.max(...allSlots)+1;
+  allSlots.push(ns);localStorage.setItem(SK,JSON.stringify(allSlots));
+  saveD(ns,dDef());switchSlot(ns);openProf();
+}
+function removeSlot(s){
+  if(allSlots.length<=1){alert('Cannot delete the only user.');return;}
+  if(!confirm('Delete this user and all their data?'))return;
+  allSlots=allSlots.filter(x=>x!==s);localStorage.setItem(SK,JSON.stringify(allSlots));
+  localStorage.removeItem(DK(s));
+  if(activeSlot===s)switchSlot(allSlots[0]);else{renderModals();}
+}
+
+// ── Init ──
+renderAll();
+</script>
+</body>
+</html>
